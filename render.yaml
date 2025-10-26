@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: tb-harden-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        value: your-openai-api-key-here  # La configurarás en Render
+
+  - type: web
+    name: tb-harden-frontend
+    env: static
+    plan: free
+    rootDir: fe/dist
+    buildCommand: cd fe && npm install && npm run build
+    staticPublishPath: ./fe/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: tb-harden-backend
+          property: url

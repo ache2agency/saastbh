@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: tb-harden-backend
+    env: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+
+  - type: web
+    name: tb-harden-frontend
+    env: node
+    plan: free
+    rootDir: fe
+    buildCommand: npm install && npm run build
+    startCommand: npm run preview
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: tb-harden-backend
+          property: url
