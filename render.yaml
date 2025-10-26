@@ -1,18 +1,24 @@
 services:
-  # This is a Web Service (backend API)
   - type: web
     name: tb-harden-backend
-    env: python # This makes it a web service
-    plan: free # The plan is valid here
-    rootDir: backend
+    env: python
+    plan: free
+    rootDir: be  # ← CORREGIDO: era 'backend', ahora 'be'
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        value: your-api-key-here
 
-  # This is a Static Site (frontend)
   - type: web
     name: tb-harden-frontend
-    env: static # This makes it a static site
-    # The 'plan' key is removed for static sites
-    rootDir: fe
-    buildCommand: cd fe && npm install && npm run build
+    env: static
+    rootDir: fe  # ← CORRECTO: 'fe'
+    buildCommand: |
+      cd fe
+      npm install
+      npm run build
     staticPublishPath: ./fe/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://tb-harden-backend.onrender.com
