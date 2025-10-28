@@ -3,8 +3,10 @@ services:
     name: tb-harden-backend
     env: python
     plan: free
-    rootDir: be  # ← CORREGIDO: era 'backend', ahora 'be'
-    buildCommand: pip install -r requirements.txt
+    rootDir: be
+    buildCommand: |
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
@@ -13,10 +15,11 @@ services:
   - type: web
     name: tb-harden-frontend
     env: static
-    rootDir: fe  # ← CORRECTO: 'fe'
+    rootDir: fe
     buildCommand: |
-     python -m pip install --upgrade pip
-     pip install -r requirements.txt
+      cd fe
+      npm install
+      npm run build
     staticPublishPath: ./fe/dist
     envVars:
       - key: VITE_API_URL
