@@ -46,19 +46,50 @@ def generar_clase(data: Prompt):
 def descargar_pdf(data: Prompt):
     pdf = FPDF()
     pdf.add_page()
+    
+    # Configuración mejorada
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.set_font("Arial", size=12)
     
-    lineas = data.mensaje.replace('\r\n', '\n').split('\n')
+    # Título
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(200, 10, txt="Clase de Inglés Generada", ln=True, align='C')
+    pdf.ln(10)
+    
+    # Contenido con mejor formato
+    pdf.set_font("Arial", size=12)
+    
+    # Dividir el contenido en líneas manejables
+    contenido = data.mensaje
+    lineas = contenido.split('\n')
+    
     for linea in lineas:
-        if linea.strip():
-            pdf.multi_cell(w=190, h=10, txt=linea.strip(), border=0)
-        else:
-            pdf.ln(5)
-
-    filename = f"clase_{uuid.uuid4().hex}.pdf"
+        if linea.strip():  # Si la línea tiene contenido
+            # Si la línea es muy larga, dividirla
+            if pdf.get_string_width(linea) > 180:
+                palabras = linea.split(' ')
+                linea_actual = ""
+                for palabra in palabras:
+                    if pdf.get_string_width(linea_actual + palabra + " ") <= 180:
+                        linea_actual += palabra + " "
+                    else:
+                        if linea_actual:
+                            pdf.multi_cell(0, 10, txt=linea_actual.strip())
+                        linea_actual = palabra + " "
+                if linea_actual:
+                    pdf.multi_cell(0, 10, txt=linea_actual.strip())
+            else:
+                pdf.multi_cell(0, 10, txt=linea)
+        pdf.ln(2)  # Espacio entre líneas
+    
+    filename = f"clase_ingles_{uuid.uuid4().hex}.pdf"
     pdf.output(filename)
-    return FileResponse(path=filename, filename=filename, media_type='application/pdf')
+    
+    return FileResponse(
+        path=filename, 
+        filename=filename, 
+        media_type='application/pdf'
+    )
 
 if __name__ == "__main__":
     import uvicorn
