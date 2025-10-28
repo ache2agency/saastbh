@@ -20,7 +20,7 @@ services:
       cd fe
       npm install
       npm run build
-    staticPublishPath: ./fe/dist
+    staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
         value: https://tb-harden-backend.onrender.com
