@@ -23,7 +23,11 @@ def home():
     return {"message": "¡Hola! Tu backend está funcionando 🎉"}
 
 # API key desde variable de entorno
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=os.getenv("OPENROUTER_API_KEY")
+)
 
 class Prompt(BaseModel):
     mensaje: str
@@ -32,7 +36,8 @@ class Prompt(BaseModel):
 def generar_clase(data: Prompt):
     try:
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            # model="gpt-3.5-turbo",
+            model="meta-llama/llama-3.3-70b-instruct:free",
             messages=[
                 {"role": "system", "content": "Eres un experto en enseñanza del inglés como T.B. Harden."},
                 {"role": "user", "content": data.mensaje}
