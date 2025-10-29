@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from openai import OpenAI
 from fpdf import FPDF
 import uuid
+from vector_store import vector_store
 
 app = FastAPI()
 
@@ -35,12 +36,28 @@ class Prompt(BaseModel):
 @app.post("/generar-clase")
 def generar_clase(data: Prompt):
     try:
+        # 1. Buscar en la base de conocimientos de TB Harden
+        contexto_relevante = vector_store.search(data.mensaje, n_results=2)
+        
+        # 2. Crear prompt enriquecido con el contexto
+        prompt_contextualizado = f"""
+        Basándote en la metodología de TB Harden y este contexto específico:
+        
+        CONTEXTO TB HARDEN:
+        {chr(10).join(contexto_relevante) if contexto_relevante else 'No se encontró contexto específico.'}
+        
+        SOLICITUD DEL USUARIO:
+        {data.mensaje}
+        
+        Genera una clase estructurada siguiendo los principios de TB Harden.
+        """
+        
+        # 3. Generar la clase con el contexto
         response = client.chat.completions.create(
-            # model="gpt-3.5-turbo",
             model="meta-llama/llama-3.3-70b-instruct:free",
             messages=[
                 {"role": "system", "content": "Eres un experto en enseñanza del inglés como T.B. Harden."},
-                {"role": "user", "content": data.mensaje}
+                {"role": "user", "content": prompt_contextualizado}
             ]
         )
         return {"clase_generada": response.choices[0].message.content}
