@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from openai import OpenAI
 from fpdf import FPDF
 import uuid
-from vector_store import vector_store
+from .vector_store import vector_store
 
 app = FastAPI()
 
