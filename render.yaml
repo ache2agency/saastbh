@@ -17,9 +17,8 @@ services:
     env: static
     rootDir: fe
     buildCommand: |
-      cd fe
-      npm install
-      npm run build
+     python -m pip install --upgrade pip
+     pip install -r requirements.txt
     staticPublishPath: ./dist
     envVars:
       - key: VITE_API_URL
