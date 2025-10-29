@@ -4,7 +4,9 @@ services:
     env: python
     plan: free
     rootDir: be
-    buildCommand: pip install -r ../requirements.txt
+    buildCommand: |
+      cd ..
+      pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
@@ -13,12 +15,8 @@ services:
   - type: web
     name: tb-harden-frontend
     env: static
-    rootDir: fe
     buildCommand: |
       cd fe
       npm install
       npm run build
-    staticPublishPath: ./fe/dist
-    envVars:
-      - key: VITE_API_URL
-        value: https://tb-harden-backend.onrender.com
+    staticPublishPath: ./dist
