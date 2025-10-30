@@ -1,4 +1,8 @@
 import os
+import sys
+# Agregar esta línea para asegurar que Python encuentre los módulos
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -6,7 +10,9 @@ from fastapi.responses import FileResponse
 from openai import OpenAI
 from fpdf import FPDF
 import uuid
-from .vector_store import vector_store
+from vector_store import vector_store
+
+# El resto de tu código se mantiene igual...
 
 app = FastAPI()
 
